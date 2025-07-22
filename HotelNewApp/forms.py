@@ -1,4 +1,5 @@
 from django import forms
+from .models import Usuario
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Usuario', max_length=150, widget=forms.TextInput(attrs={
@@ -11,3 +12,11 @@ class LoginForm(forms.Form):
         'placeholder': 'Ingrese su contraseña',
         'required': 'required'
     }))
+
+class UsuarioForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['username', 'password', 'rol']
+        widgets = {
+            'password': forms.PasswordInput(),
+        }
