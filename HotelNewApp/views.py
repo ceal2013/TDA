@@ -6,19 +6,20 @@ from .forms import LoginForm
 
 # Create your views here.
 def login_view(request):
+    form = LoginForm(request.POST or None)
+    
     if request.method == 'POST':
-        form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
+            
             if user is not None:
                 login(request, user)
                 return redirect('home')
             else:
-                messages.error(request, 'Credenciales inválidas')
-    else:
-        form = LoginForm()
+                messages.error(request, "Usuario o contraseña incorrectos.")
+    
     return render(request, 'login.html', {'form': form})
 
 
