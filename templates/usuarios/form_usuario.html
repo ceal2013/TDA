@@ -7,6 +7,14 @@
             {{ accion }} Usuario
         </div>
         <div class="card-body">
+            
+            <!-- Mostrar errores generales del formulario -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
 
@@ -23,6 +31,14 @@
                     {{ form.password }}
                     {% if form.password.errors %}
                         <div class="text-danger">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password_confirm.label_tag }}
+                    {{ form.password_confirm }}
+                    {% if form.password_confirm.errors %}
+                        <div class="text-danger">{{ form.password_confirm.errors }}</div>
                     {% endif %}
                 </div>
 

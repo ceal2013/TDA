@@ -120,7 +120,7 @@
                         <div id="usuariosCollapse" class="accordion-collapse collapse" aria-labelledby="usuariosHeading" data-bs-parent="#sidebarAccordion">
                             <div class="accordion-body">
                                 <ul class="list-group list-group-flush">
-                                    {% if user.is_superuser %}
+                                    {% if request.session.rol == "admin" %}
                                     <li class="list-group-item">
                                         <a href="{% url 'listar_usuarios' %}" class="text-decoration-none d-flex align-items-center">
                                             <i class="bi bi-people-fill me-2"></i> Administrar Usuarios

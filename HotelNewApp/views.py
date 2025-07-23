@@ -34,51 +34,61 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 
-@login_required
 def home(request):
+    if not request.session.get('usuario_id'):
+        return redirect('login')
     return render(request, 'home.html')
 
-@login_required
 def user_logout(request):
-    logout(request)
+    request.session.flush()  # Borra la sesión manualmente
     return redirect('login')
 
 def listar_usuarios(request):
+    if not request.session.get('usuario_id') or request.session.get('rol') != 'admin':
+        return redirect('login')
+    
     usuarios = Usuario.objects.all()
     return render(request, 'usuarios/listar_usuarios.html', {'usuarios': usuarios})
 
 def crear_usuario(request):
-    if not request.user.is_authenticated or not request.user.is_superuser:
+    if not request.session.get('usuario_id') or request.session.get('rol') != 'admin':
         return redirect('login')
     
     if request.method == 'POST':
         form = UsuarioForm(request.POST)
         if form.is_valid():
-            usuario = form.save(commit=False)
-            usuario.password = make_password(form.cleaned_data['password'])
-            usuario.save()
+            form.save()  # Ya hace el set_password dentro del form
             return redirect('listar_usuarios')
     else:
         form = UsuarioForm()
+    
     return render(request, 'usuarios/form_usuario.html', {'form': form, 'accion': 'Crear'})
 
 def editar_usuario(request, id_usuario):
+    if not request.session.get('usuario_id') or request.session.get('rol') != 'admin':
+        return redirect('login')
+
     usuario = Usuario.objects.get(id_usuario=id_usuario)
+
     if request.method == 'POST':
         form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
             usuario = form.save(commit=False)
-            # Si cambió la contraseña, la re-encriptamos
             nueva_pass = form.cleaned_data['password']
-            if not usuario.password.startswith('pbkdf2_'):  # Solo si no está ya encriptada
+            if not usuario.password.startswith('pbkdf2_'):
                 usuario.password = make_password(nueva_pass)
             usuario.save()
             return redirect('listar_usuarios')
     else:
         form = UsuarioForm(instance=usuario)
+    
     return render(request, 'usuarios/form_usuario.html', {'form': form, 'accion': 'Editar'})
 
+
 def eliminar_usuario(request, id_usuario):
+    if not request.session.get('usuario_id') or request.session.get('rol') != 'admin':
+        return redirect('login')
+
     usuario = Usuario.objects.get(id_usuario=id_usuario)
     usuario.delete()
     return redirect('listar_usuarios')
