@@ -1,40 +1,63 @@
 {% extends "home.html" %}
 {% block content %}
-<h2>Reservas</h2>
-<a href="{% url 'crear_reserva' %}" class="btn btn-primary mb-3">Crear Reserva</a>
+<div class="container">
+    <h2 class="mb-4">Reservas</h2>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Responsable</th>
-            <th>Fecha Reserva</th>
-            <th>Hora Reserva</th>
-            <th>Total</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
+    <a href="{% url 'crear_reserva' %}" class="btn btn-success mb-3">Crear Reserva</a>
+
+    {% if reservas %}
         {% for reserva in reservas %}
-        <tr>
-            <td>{{ reserva.id_reserva }}</td>
-            <td>{{ reserva.id_pasajero_responsable.nombre }}</td>
-            <td>{{ reserva.fecha_reserva }}</td>
-            <td>{{ reserva.hora_reserva }}</td>
-            <td>${{ reserva.total }}</td>
-            <td>{{ reserva.estado }}</td>
-            <td>
-                {% if reserva.estado == 'activa' %}
-                    <a href="{% url 'cancelar_reserva' reserva.id_reserva %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Cancelar reserva?')">Cancelar</a>
-                {% else %}
-                    <span class="text-muted">Cancelada</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="7" class="text-center">No hay reservas.</td></tr>
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    Reserva N° {{ reserva.id }} - Encargado: {{ reserva.encargado.nombre }}
+                </div>
+                <div class="card-body">
+                    <p><strong>Pasajero Responsable:</strong> {{ reserva.pasajero_responsable.nombre }}</p>
+                    <p><strong>Fecha de creación:</strong> {{ reserva.fecha_creacion }}</p>
+                    <p><strong>Total:</strong> ${{ reserva.total }}</p>
+                    <p><strong>Estado:</strong> {{ reserva.estado }}</p>
+
+                    <h5>Habitaciones Reservadas:</h5>
+                    {% if reserva.reservahabitacion_set.all %}
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Habitación</th>
+                                    <th>Capacidad</th>
+                                    <th>Días</th>
+                                    <th>Asignar Pasajeros</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rh in reserva.reservahabitacion_set.all %}
+                                    <tr>
+                                        <td>{{ rh.id_habitacion.numero_habitacion }}</td>
+                                        <td>{{ rh.id_habitacion.capacidad }}</td>
+                                        <td>{{ rh.dias }}</td>
+                                        <td>
+                                            <a href="{% url 'asignar_pasajeros' rh.id %}" class="btn btn-primary btn-sm">
+                                                Asignar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>No hay habitaciones asociadas.</p>
+                    {% endif %}
+
+                    {% if reserva.estado != 'Cancelada' %}
+                        <a href="{% url 'cancelar_reserva' reserva.id %}" class="btn btn-danger"
+                           onclick="return confirm('¿Estás seguro de cancelar esta reserva?')">
+                            Cancelar Reserva
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
-    </tbody>
-</table>
+    {% else %}
+        <p>No hay reservas registradas.</p>
+    {% endif %}
+</div>
 {% endblock %}

@@ -94,9 +94,20 @@ class ReservaHabitacion(models.Model):
     fecha_checkout = models.DateField()
     cantidad_pasajeros = models.PositiveIntegerField()
 
+    
     def clean(self):
         if self.cantidad_pasajeros != self.habitacion.capacidad:
             raise ValidationError("La cantidad de pasajeros debe coincidir con la capacidad de la habitación.")
+
+        # Verificar solapamiento de fechas
+        solapadas = ReservaHabitacion.objects.filter(
+            habitacion=self.habitacion,
+            fecha_checkin__lt=self.fecha_checkout,
+            fecha_checkout__gt=self.fecha_checkin
+        ).exclude(id=self.id)
+
+        if solapadas.exists():
+            raise ValidationError("La habitación ya está reservada en ese rango de fechas.")
 
     def __str__(self):
         return f"{self.habitacion} ({self.fecha_checkin} a {self.fecha_checkout})"

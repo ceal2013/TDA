@@ -21,7 +21,7 @@
             <td>{{ habitacion.orientacion }}</td>
             <td>{{ habitacion.activa|yesno:"Activa,Inactiva" }}</td>
             <td>
-                <a href="{% url 'eliminar_habitacion' habitacion.id_habitacion %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar habitación?')">Eliminar</a>
+                <a href="{% url 'eliminar_habitacion' habitacion.id %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar habitación?')">Eliminar</a>
             </td>
         </tr>
         {% empty %}

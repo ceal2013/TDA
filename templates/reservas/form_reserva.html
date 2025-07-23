@@ -3,10 +3,17 @@
 <h2>{{ accion }} Reserva</h2>
 <form method="POST" novalidate>
     {% csrf_token %}
+
     <h4>Datos de reserva</h4>
     {{ reserva_form.as_p }}
-    <h4>Datos de habitación</h4>
-    {{ reserva_habitacion_form.as_p }}
+
+    <h4>Datos de habitaciones</h4>
+    {{ formset.management_form }}
+    {% for form in formset %}
+        <div class="card mb-3 p-3">
+            {{ form.as_p }}
+        </div>
+    {% endfor %}
 
     <button type="submit" class="btn btn-success">{{ accion }}</button>
     <a href="{% url 'listar_reservas' %}" class="btn btn-secondary">Cancelar</a>

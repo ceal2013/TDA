@@ -77,7 +77,7 @@
 
             {% if request.session.usuario_id %}
                 <div class="ms-auto d-flex align-items-center">
-                    <p class="mb-0 text-white me-3">Sesión iniciada como: <strong>{{ request.session.nombre_usuario }}</strong></p>
+                    <p class="mb-0 text-white me-3">Sesión iniciada como: <strong>{{ request.session.username }}</strong></p>
                     <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
                 </div>
             {% else %}

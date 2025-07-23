@@ -14,7 +14,7 @@ urlpatterns = [
     # Habitaciones
     path('habitaciones/', views.listar_habitaciones, name='listar_habitaciones'),
     path('habitaciones/crear/', views.crear_habitacion, name='crear_habitacion'),
-    path('habitaciones/eliminar/<int:id_habitacion>/', views.eliminar_habitacion, name='eliminar_habitacion'),
+    path('habitaciones/eliminar/<int:id>/', views.eliminar_habitacion, name='eliminar_habitacion'),
 
     # Pasajeros
     path('pasajeros/', views.listar_pasajeros, name='listar_pasajeros'),

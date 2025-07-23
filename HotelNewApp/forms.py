@@ -58,7 +58,14 @@ class ReservaHabitacionForm(forms.ModelForm):
         fields = ['habitacion', 'fecha_checkin', 'fecha_checkout', 'cantidad_pasajeros']
 
 from django.forms import inlineformset_factory
-ReservaHabitacionFormSet = inlineformset_factory(Reserva, ReservaHabitacion, form=ReservaHabitacionForm, extra=1, can_delete=True)
+ReservaHabitacionFormSet = inlineformset_factory(
+    Reserva,
+    ReservaHabitacion,
+    fields=('habitacion', 'fecha_checkin', 'fecha_checkout', 'cantidad_pasajeros'),
+    extra=1,
+    can_delete=True,
+    validate_min=True
+)
 
 class PasajeroHabitacionForm(forms.ModelForm):
     class Meta:

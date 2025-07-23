@@ -109,8 +109,8 @@ def crear_habitacion(request):
     return render(request, 'habitaciones/form_habitacion.html', {'form': form, 'accion': 'Crear'})
 
 @custom_login_required
-def eliminar_habitacion(request, id_habitacion):
-    habitacion = get_object_or_404(Habitacion, id=id_habitacion)
+def eliminar_habitacion(request, id):
+    habitacion = get_object_or_404(Habitacion, id=id)
     if habitacion.tiene_pasajeros_activos():
         messages.error(request, "No puede eliminar una habitación con pasajeros activos.")
     else:
@@ -152,21 +152,28 @@ def crear_reserva(request):
     if request.method == 'POST':
         reserva_form = ReservaForm(request.POST)
         formset = ReservaHabitacionFormSet(request.POST)
+
         if reserva_form.is_valid() and formset.is_valid():
             reserva = reserva_form.save(commit=False)
             reserva.encargado_id = request.session['usuario_id']
             reserva.total = 0
             reserva.save()
             formset.instance = reserva
-            formset.save()
+
+            habitaciones = formset.save(commit=False)
+            for rh in habitaciones:
+                rh.clean()  # valida fechas y capacidad
+                rh.save()
             reserva.calcular_total()
+
             messages.success(request, "Reserva creada exitosamente. Ahora asigne los pasajeros.")
-            return redirect('asignar_pasajeros', id_reserva=reserva.id_reserva)
+            return redirect('asignar_pasajeros', id_reserva=reserva.id)
         else:
             messages.error(request, "Error al crear la reserva. Revise los datos.")
     else:
         reserva_form = ReservaForm()
         formset = ReservaHabitacionFormSet()
+
     return render(request, 'reservas/form_reserva.html', {
         'reserva_form': reserva_form,
         'formset': formset,
@@ -215,7 +222,7 @@ def asignar_pasajeros(request, id_reserva):
 
             for rh in habitaciones_reservadas:
                 if total_por_habitacion.get(rh.id, 0) != rh.cantidad_pasajeros:
-                    messages.error(request, f"La habitación {rh.id_habitacion.numero_habitacion} debe tener exactamente {rh.cantidad_pasajeros} pasajeros alojados.")
+                    messages.error(request, f"La habitación {rh.habitacion.numero_habitacion} debe tener exactamente {rh.cantidad_pasajeros} pasajeros alojados.")
                     return redirect('asignar_pasajeros', id_reserva=id_reserva)
 
             if responsable_count != 1:
