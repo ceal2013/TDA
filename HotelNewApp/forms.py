@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashWidget
-from .models import Usuario
+from .models import Usuario, Habitacion, Pasajero, Reserva, ReservaHabitacion
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Usuario', max_length=150, widget=forms.TextInput(attrs={
@@ -35,3 +35,26 @@ class UsuarioForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+class HabitacionForm(forms.ModelForm):
+    class Meta:
+        model = Habitacion
+        fields = ['numero_habitacion', 'capacidad', 'orientacion']
+
+class PasajeroForm(forms.ModelForm):
+    class Meta:
+        model = Pasajero
+        fields = ['nombre', 'rut']
+
+class ReservaForm(forms.ModelForm):
+    class Meta:
+        model = Reserva
+        fields = ['pasajero_responsable']
+
+class ReservaHabitacionForm(forms.ModelForm):
+    class Meta:
+        model = ReservaHabitacion
+        fields = ['habitacion', 'fecha_checkin', 'fecha_checkout', 'cantidad_pasajeros']
+
+from django.forms import inlineformset_factory
+ReservaHabitacionFormSet = inlineformset_factory(Reserva, ReservaHabitacion, form=ReservaHabitacionForm, extra=1, can_delete=True)
