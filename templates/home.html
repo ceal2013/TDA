@@ -73,16 +73,17 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            {% if user.is_authenticated %}
-                <a class="navbar-brand" href="{% url 'home' %}">HotelNew App</a>
-                {%if user.is_staff %}
-                    <div class="ms-auto">
-                        <p class="text-center">Has iniciado sesión como: <strong>{{ request.user.username }}</strong></p>
-                        <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
-                    </div>
-                {% endif %}
+            <a class="navbar-brand" href="{% url 'home' %}">HotelNew App</a>
+
+            {% if request.session.usuario_id %}
+                <div class="ms-auto d-flex align-items-center">
+                    <p class="mb-0 text-white me-3">Sesión iniciada como: <strong>{{ request.session.nombre_usuario }}</strong></p>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
+                </div>
             {% else %}
-                <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                <div class="ms-auto">
+                    <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Iniciar sesión</a>
+                </div>
             {% endif %}
         </div>
     </nav>
