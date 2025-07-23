@@ -1,16 +1,17 @@
 {% extends "home.html" %}
 {% load static %}
 {% block content %}
-<h2>Asignar Pasajeros a Habitación {{ reserva_habitacion.id_habitacion.numero_habitacion }}</h2>
-<p>Capacidad: {{ capacidad }} pasajeros</p>
+<h2>Asignar Pasajeros a la Reserva Nº {{ reserva.id }}</h2>
 
 <form method="POST">
     {% csrf_token %}
     {{ formset.management_form }}
-    <table class="table">
-        <thead>
+
+    <table class="table table-bordered">
+        <thead class="table-light">
             <tr>
                 <th>Pasajero</th>
+                <th>Habitación</th>
                 <th>Responsable</th>
                 <th>Está alojado</th>
                 <th>Eliminar</th>
@@ -20,6 +21,7 @@
         {% for form in formset %}
             <tr>
                 <td>{{ form.pasajero }}</td>
+                <td>{{ form.reserva_habitacion }}</td>
                 <td>{{ form.es_responsable }}</td>
                 <td>{{ form.esta_alojado }}</td>
                 <td>{% if form.instance.pk %}{{ form.DELETE }}{% else %}--{% endif %}</td>
@@ -27,7 +29,10 @@
         {% endfor %}
         </tbody>
     </table>
-    <button type="submit" class="btn btn-primary">Guardar asignaciones</button>
-    <a href="{% url 'listar_reservas' %}" class="btn btn-secondary">Volver</a>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'listar_reservas' %}" class="btn btn-secondary">Volver</a>
+        <button type="submit" class="btn btn-primary">Guardar Asignaciones</button>
+    </div>
 </form>
 {% endblock %}

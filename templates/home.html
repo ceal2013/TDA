@@ -99,16 +99,85 @@
                 <hr class="my-0">
 
                 <!-- Secciones del Menú Lateral -->
+                <!-- Dentro del acordeón del sidebar -->
                 <div class="accordion" id="sidebarAccordion">
 
                     <!-- Módulo de Habitaciones -->
-
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="habitacionesHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#habitacionesCollapse" aria-expanded="false" aria-controls="habitacionesCollapse">
+                                Habitaciones
+                            </button>
+                        </h2>
+                        <div id="habitacionesCollapse" class="accordion-collapse collapse" aria-labelledby="habitacionesHeading" data-bs-parent="#sidebarAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'listar_habitaciones' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-door-closed me-2"></i> Ver Habitaciones
+                                        </a>
+                                    </li>
+                                    {% if request.session.rol == "admin" %}
+                                    <li class="list-group-item">
+                                        <a href="{% url 'crear_habitacion' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-plus-circle me-2"></i> Crear Habitación
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Módulo de Pasajeros -->
-
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="pasajerosHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pasajerosCollapse" aria-expanded="false" aria-controls="pasajerosCollapse">
+                                Pasajeros
+                            </button>
+                        </h2>
+                        <div id="pasajerosCollapse" class="accordion-collapse collapse" aria-labelledby="pasajerosHeading" data-bs-parent="#sidebarAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'listar_pasajeros' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-person-lines-fill me-2"></i> Ver Pasajeros
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'crear_pasajero' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-person-plus-fill me-2"></i> Registrar Pasajero
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Módulo de Reservas -->
-
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="reservasHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reservasCollapse" aria-expanded="false" aria-controls="reservasCollapse">
+                                Reservas
+                            </button>
+                        </h2>
+                        <div id="reservasCollapse" class="accordion-collapse collapse" aria-labelledby="reservasHeading" data-bs-parent="#sidebarAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <a href="{% url 'listar_reservas' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-card-checklist me-2"></i> Ver Reservas
+                                        </a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="{% url 'crear_reserva' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-journal-plus me-2"></i> Nueva Reserva
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Módulo de Usuarios -->
                     <div class="accordion-item">
@@ -124,7 +193,7 @@
                                     <li class="list-group-item">
                                         <a href="{% url 'listar_usuarios' %}" class="text-decoration-none d-flex align-items-center">
                                             <i class="bi bi-people-fill me-2"></i> Administrar Usuarios
-                                        </a>            
+                                        </a>
                                     </li>
                                     {% endif %}
                                 </ul>
@@ -132,7 +201,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Footer del Sidebar -->
             <div class="mt-auto p-3">
