@@ -1,0 +1,33 @@
+{% extends "home.html" %}
+{% block content %}
+<h2>Habitaciones</h2>
+<a href="{% url 'crear_habitacion' %}" class="btn btn-primary mb-3">Crear Habitación</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Número</th>
+            <th>Capacidad</th>
+            <th>Orientación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for habitacion in habitaciones %}
+        <tr>
+            <td>{{ habitacion.numero_habitacion }}</td>
+            <td>{{ habitacion.capacidad }}</td>
+            <td>{{ habitacion.orientacion }}</td>
+            <td>{{ habitacion.activa|yesno:"Activa,Inactiva" }}</td>
+            <td>
+                <a href="{% url 'eliminar_habitacion' habitacion.id_habitacion %}" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar habitación?')">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center">No hay habitaciones registradas.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+

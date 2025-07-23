@@ -1,0 +1,33 @@
+{% extends "home.html" %}
+{% load static %}
+{% block content %}
+<h2>Asignar Pasajeros a Habitación {{ reserva_habitacion.id_habitacion.numero_habitacion }}</h2>
+<p>Capacidad: {{ capacidad }} pasajeros</p>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pasajero</th>
+                <th>Responsable</th>
+                <th>Está alojado</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for form in formset %}
+            <tr>
+                <td>{{ form.pasajero }}</td>
+                <td>{{ form.es_responsable }}</td>
+                <td>{{ form.esta_alojado }}</td>
+                <td>{% if form.instance.pk %}{{ form.DELETE }}{% else %}--{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-primary">Guardar asignaciones</button>
+    <a href="{% url 'listar_reservas' %}" class="btn btn-secondary">Volver</a>
+</form>
+{% endblock %}

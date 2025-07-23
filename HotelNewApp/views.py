@@ -4,9 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
-from .forms import LoginForm, UsuarioForm, HabitacionForm, PasajeroForm, ReservaForm, ReservaHabitacionFormSet
-from .models import Usuario, Habitacion, Pasajero, Reserva, ReservaHabitacion
+from .forms import LoginForm, UsuarioForm, HabitacionForm, PasajeroForm, ReservaForm, ReservaHabitacionFormSet, PasajeroHabitacionForm, PasajeroHabitacionFormSet
+from .models import Usuario, Habitacion, Pasajero, Reserva, ReservaHabitacion, PasajeroHabitacion
 from .decorators import custom_login_required, role_required
+from django.forms import modelformset_factory
 
 # Create your views here.
 def login_view(request):
@@ -179,3 +180,77 @@ def cancelar_reserva(request, id_reserva):
     reserva.save()
     messages.success(request, "Reserva anulada correctamente.")
     return redirect('listar_reservas')
+
+@custom_login_required
+def asignar_pasajeros_reserva_habitacion(request, id_reserva_habitacion):
+    reserva_habitacion = get_object_or_404(ReservaHabitacion, id=id_reserva_habitacion)
+    capacidad = reserva_habitacion.id_habitacion.capacidad
+    
+    # Obtener queryset inicial: pasajeros ya asignados a esta reserva habitación
+    queryset = PasajeroHabitacion.objects.filter(reserva_habitacion=reserva_habitacion)
+
+    PasajeroHabitacionFormSet = modelformset_factory(
+        PasajeroHabitacion,
+        form=PasajeroHabitacionForm,
+        extra=capacidad - queryset.count(),  # permitir agregar pasajeros hasta completar capacidad
+        can_delete=True
+    )
+
+    if request.method == 'POST':
+        formset = PasajeroHabitacionFormSet(request.POST, queryset=queryset)
+        if formset.is_valid():
+            total_pasajeros = 0
+            responsable_count = 0
+            alojados_count = 0
+
+            instances = formset.save(commit=False)
+            # Eliminar los borrados
+            for obj in formset.deleted_objects:
+                obj.delete()
+
+            # Validaciones y guardado
+            pasajeros_ids = []
+            for form in formset:
+                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                    pasajero = form.cleaned_data['pasajero']
+                    es_responsable = form.cleaned_data.get('es_responsable', False)
+                    esta_alojado = form.cleaned_data.get('esta_alojado', True)
+                    
+                    if pasajero.id in pasajeros_ids:
+                        messages.error(request, "No puede asignar un mismo pasajero más de una vez.")
+                        return render(request, 'reservas/asignar_pasajeros.html', {'formset': formset, 'reserva_habitacion': reserva_habitacion, 'capacidad': capacidad})
+                    pasajeros_ids.append(pasajero.id)
+                    
+                    total_pasajeros += 1 if esta_alojado else 0
+                    if es_responsable:
+                        responsable_count += 1
+                    if esta_alojado:
+                        alojados_count += 1
+
+            if total_pasajeros > capacidad:
+                messages.error(request, f"No puede asignar más pasajeros alojados ({total_pasajeros}) que la capacidad ({capacidad}).")
+                return render(request, 'reservas/asignar_pasajeros.html', {'formset': formset, 'reserva_habitacion': reserva_habitacion, 'capacidad': capacidad})
+
+            if responsable_count != 1:
+                messages.error(request, "Debe haber exactamente un pasajero responsable.")
+                return render(request, 'reservas/asignar_pasajeros.html', {'formset': formset, 'reserva_habitacion': reserva_habitacion, 'capacidad': capacidad})
+
+            # Guardar todos
+            for instance in instances:
+                instance.reserva_habitacion = reserva_habitacion
+                instance.save()
+
+            messages.success(request, "Pasajeros asignados correctamente.")
+            return redirect('listar_reservas')
+    else:
+        # Si no existen asignaciones, precargamos forms vacíos para llenar capacidad
+        if queryset.exists():
+            formset = PasajeroHabitacionFormSet(queryset=queryset)
+        else:
+            formset = PasajeroHabitacionFormSet(queryset=PasajeroHabitacion.objects.none(), initial=[{}]*capacidad)
+
+    return render(request, 'reservas/asignar_pasajeros.html', {
+        'formset': formset,
+        'reserva_habitacion': reserva_habitacion,
+        'capacidad': capacidad
+    })

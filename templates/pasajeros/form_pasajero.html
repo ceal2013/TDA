@@ -1,0 +1,10 @@
+{% extends "home.html" %}
+{% block content %}
+<h2>{{ accion }} Pasajero</h2>
+<form method="POST" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">{{ accion }}</button>
+    <a href="{% url 'listar_pasajeros' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
