@@ -1,0 +1,43 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            {{ accion }} Usuario
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <div class="text-danger">{{ form.username.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="text-danger">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.rol.label_tag }}
+                    {{ form.rol }}
+                    {% if form.rol.errors %}
+                        <div class="text-danger">{{ form.rol.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-success">{{ accion }}</button>
+                <a href="{% url 'listar_usuarios' %}" class="btn btn-secondary ms-2">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

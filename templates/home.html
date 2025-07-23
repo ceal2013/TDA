@@ -13,23 +13,58 @@
     <link rel="icon" href="{% static 'hotelnewicono.png' %}" type="image/png">
     <title>HotelNew - Panel Principal</title>
     <style>
-        body {
-            background-color: #f4f4f4;
+       body {
+        background-color: #f4f4f4;
         }
+
         .navbar {
-            background-color: #003972;
+        background-color: #003972;
         }
-        .navbar-brand, .nav-link, .navbar-text {
+
+        .navbar-brand,
+        .nav-link,
+        .navbar-text {
             color: #fff !important;
         }
-        .main-container {
-            margin-top: 40px;
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
         }
+
+        .sidebar {
+            width: 250px;
+            background-color: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 1rem;
+        }
+
+        .sidebar-header img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .main-container {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #f8f9fa;
+            margin-top: 0; /* anula el margen que tenías antes */
+        }
+
         .card {
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+
         .card-title {
             color: #003972;
+        }
+
+        .accordion-button {
+            background-color: #e9ecef;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #cfd8dc;
         }
     </style>
 </head>
@@ -38,90 +73,101 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">HotelNew App</a>
-            <div class="ms-auto">
-                <p class="text-center">Has iniciado sesión como: <strong>{{ request.user.username }}</strong></p>
-                <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
-            </div>
+            {% if user.is_authenticated %}
+                <a class="navbar-brand" href="{% url 'home' %}">HotelNew App</a>
+                {%if user.is_staff %}
+                    <div class="ms-auto">
+                        <p class="text-center">Has iniciado sesión como: <strong>{{ request.user.username }}</strong></p>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm">Cerrar sesión</a>
+                    </div>
+                {% endif %}
+            {% else %}
+                <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+            {% endif %}
         </div>
     </nav>
     
     <!-- Layout -->
-<div class="layout">
+    <div class="layout">
 
-    <!-- Sidebar -->
-    <nav class="sidebar d-flex flex-column">
-        <div>
-            <div class="sidebar-header d-flex flex-column align-items-center">
-                <img src="/static/logohotelnew.png" alt="Logo">
-            </div>
-            <hr class="my-0">
+        <!-- Sidebar -->
+        <nav class="sidebar d-flex flex-column">
+            <div>
+                <div class="sidebar-header d-flex flex-column align-items-center">
+                    <img src="/static/logohotelnew.png" alt="Logo">
+                </div>
+                <hr class="my-0">
 
-            <!-- Secciones del Menú Lateral -->
-            <div class="accordion" id="sidebarAccordion">
+                <!-- Secciones del Menú Lateral -->
+                <div class="accordion" id="sidebarAccordion">
 
-                <!-- Módulo de Habitaciones -->
-
-
-                <!-- Módulo de Pasajeros -->
+                    <!-- Módulo de Habitaciones -->
 
 
-                <!-- Módulo de Reservas -->
+                    <!-- Módulo de Pasajeros -->
 
 
-                <!-- Módulo de Usuarios -->
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="usuariosHeading">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#usuariosCollapse" aria-expanded="false" aria-controls="usuariosCollapse">
-                            Usuarios
-                        </button>
-                    </h2>
-                    <div id="usuariosCollapse" class="accordion-collapse collapse" aria-labelledby="usuariosHeading" data-bs-parent="#sidebarAccordion">
-                        <div class="accordion-body">
-                            <ul class="list-group list-group-flush">
-                                {% if user.is_superuser %}
-                                <li class="list-group-item">
-                                    <a href="{% url 'listar_usuarios' %}" class="text-decoration-none d-flex align-items-center">
-                                        <i class="bi bi-people-fill me-2"></i> Administrar Usuarios
-                                    </a>            
-                                </li>
-                                {% endif %}
-                            </ul>
+                    <!-- Módulo de Reservas -->
+
+
+                    <!-- Módulo de Usuarios -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="usuariosHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#usuariosCollapse" aria-expanded="false" aria-controls="usuariosCollapse">
+                                Usuarios
+                            </button>
+                        </h2>
+                        <div id="usuariosCollapse" class="accordion-collapse collapse" aria-labelledby="usuariosHeading" data-bs-parent="#sidebarAccordion">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    {% if user.is_superuser %}
+                                    <li class="list-group-item">
+                                        <a href="{% url 'listar_usuarios' %}" class="text-decoration-none d-flex align-items-center">
+                                            <i class="bi bi-people-fill me-2"></i> Administrar Usuarios
+                                        </a>            
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Botón de Cierre de Sesión -->
-        <div class="mt-auto p-3">
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="btn btn-danger w-100">Cerrar Sesión</a>
+            <!-- Footer del Sidebar -->
+            <div class="mt-auto p-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn btn-danger w-100">Cerrar Sesión</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <div class="main-container">
+            {% if messages %}
+            <div class="container">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
-        </div>
-    </nav>
 
-    <!-- Contenido Principal -->
-    <div class="container main-container">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card p-4">
-                    <h3 class="card-title text-center mb-4">Bienvenido a HotelNew</h3>
-                    <p class="text-center">Selecciona una opción para comenzar:</p>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h3 class="card-title text-center mb-4">Bienvenido a HotelNew</h3>
+                        <p class="text-center">Selecciona una opción para comenzar:</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Aquí se cargará el contenido dinámico -->
-        {% block content %}
-        {% endblock %}
+            <!-- Aquí se cargará el contenido dinámico -->
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
-</div>
 </body>
 </html>
